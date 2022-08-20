@@ -18,12 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Create SSH key
-        run: |
-          install -m 600 -D /dev/null ~/.ssh/id_rsa
-          echo "${{ secrets.ORG_DEV_SERVER_SSH_PRIVATE_KEY_BASE64 }}" | base64 --decode > ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.ORG_DEV_SERVER_IP }} > ~/.ssh/known_hosts
-
       - name: Create index.html
         working-directory: ./test
         run: |
@@ -36,6 +30,7 @@ jobs:
           host-ssh-user: ${{ secrets.ORG_DEV_SERVER_USER }}
           working-directory: ./test
           filter: 'label=AIMED_LABS=true'
+          ssh-private-key-base64: ${{ secrets.ORG_DEV_SERVER_SSH_PRIVATE_KEY_BASE64 }}
 
       - name: "Check if the build version matches"
         run: |
