@@ -1,0 +1,14 @@
+name: Test workflow
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - action.yml
+jobs:
+  lint_shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: aimed-labs/action-shellcheck@master
