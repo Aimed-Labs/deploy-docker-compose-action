@@ -1,0 +1,34 @@
+name: 'Deploy docker-compose action'
+description: 'Deploy services via docker-compose'
+author: 'zeekhuge'
+branding:
+  icon: 'maximize'
+  color: 'blue'
+inputs:
+  docker-compose-file-path:
+    description: 'Path to docker-compose.yml'
+    required: false
+    default: './docker-compose.yml'
+  filter-label
+    description: 'Filter images using this label'
+    required: false
+    default: ''
+  host-address
+    description: 'Host address for docker-compose, example: ssh://user@12.34.56.78'
+    required: true
+runs:
+  steps:
+    - id: deploy-docker_compose-action
+      run: |
+        echo "- Building docker-compose images locally ..."
+        docker-compose --verbose build
+        docker images
+        echo "- Down-ing docker-compose service on remote host ..."
+        docker-compose -f docker-compose.yml --verbose -H ${{ inputs.host-address }} down --remove-orphans
+        echo "- Loading docker images to remote host ..."
+        for image in $(docker images --filter=${{ inputs.filter-label }} --format "{{.Repository}}:{{.Tag}}"); do \
+          echo "- Sending docker image: ${image} to remote host"; \
+          docker save ${image} | bzip2 | ${{ inputs.host-address }} docker load ; \
+        done
+        echo "- Up-ing docker-compose services on remote host ..."
+        docker-compose -f docker-compose.yml --verbose -H ${{ inputs.host-address }} up --remove-orphans --detach
