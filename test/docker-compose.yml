@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+  test-nginx-app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      - VIRTUAL_HOST=test-action.things.aimedlabs.com
+      - LETSENCRYPT_HOST=test-action.things.aimedlabs.com
+      - LETSENCRYPT_EMAIL=contact@aimedlabs.com
+    network_mode: bridge
+    restart: always
