@@ -9,11 +9,11 @@ inputs:
     description: 'Path to docker-compose.yml'
     required: false
     default: './docker-compose.yml'
-  filter-label
+  filter-label:
     description: 'Filter images using this label'
     required: false
     default: ''
-  host-address
+  host-address:
     description: 'Host address for docker-compose, example: ssh://user@12.34.56.78'
     required: true
 runs:
