@@ -19,6 +19,7 @@ inputs:
 runs:
   steps:
     - id: deploy-docker_compose-action
+      shell: bash
       run: |
         echo "- Building docker-compose images locally ..."
         docker-compose --verbose build
