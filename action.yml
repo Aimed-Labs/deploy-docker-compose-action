@@ -19,9 +19,20 @@ inputs:
   host-ssh-user:
     description: ''
     required: true
+  ssh-private-key-base64:
+    description: ''
+    required: true
+    
 runs:
   using: "composite"
   steps:
+    - name: Create SSH key
+      shell: bash 
+      run: |
+        install -m 600 -D /dev/null ~/.ssh/id_rsa
+        echo "${{ inputs.ssh-private-key-base64 }}" | base64 --decode > ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ inputs.host-address }} > ~/.ssh/known_hosts
+        
     - name: Deploying docker-compose
       shell: bash
       working-directory: ${{ inputs.working-directory }}
