@@ -20,7 +20,8 @@ jobs:
       - name: Create index.html
         working-directory: ./test
         run: |
-          echo ${GITHUB_SHA} > ./index.html
+          echo ${GITHUB_SHA} > ./service_1/server/index.html
+          echo ${GITHUB_SHA} > ./service_2/server/index.html
 
       - name: "Deploy Service - 1"
         uses: ./
