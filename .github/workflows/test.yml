@@ -30,6 +30,7 @@ jobs:
           host-ssh-user: ${{ secrets.ORG_DEV_SERVER_USER }}
           working-directory: ./test/service_1/server/
           filter: 'label=AIMED_LABS=true'
+          project-name: 'server_1'
           ssh-private-key-base64: ${{ secrets.ORG_DEV_SERVER_SSH_PRIVATE_KEY_BASE64 }}
 
       - name: "Deploy Service - 2"
@@ -38,6 +39,7 @@ jobs:
           host-address: ${{ secrets.ORG_DEV_SERVER_IP }}
           host-ssh-user: ${{ secrets.ORG_DEV_SERVER_USER }}
           working-directory: ./test/service_2/server/
+          project-name: 'server_2'
           filter: 'label=AIMED_LABS=true'
           ssh-private-key-base64: ${{ secrets.ORG_DEV_SERVER_SSH_PRIVATE_KEY_BASE64 }}
 
