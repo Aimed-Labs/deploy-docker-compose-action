@@ -6,8 +6,8 @@ services:
       context: ./
       dockerfile: Dockerfile
     environment:
-      - VIRTUAL_HOST=test-action.things.aimedlabs.com
-      - LETSENCRYPT_HOST=test-action.things.aimedlabs.com
+      - VIRTUAL_HOST=service-1-test-action.things.aimedlabs.com
+      - LETSENCRYPT_HOST=service-1-test-action.things.aimedlabs.com
       - LETSENCRYPT_EMAIL=contact@aimedlabs.com
     network_mode: bridge
     restart: always
