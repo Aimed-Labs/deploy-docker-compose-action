@@ -21,19 +21,38 @@ jobs:
         run: |
           echo ${GITHUB_SHA} > ./index.html
 
-      - name: "Deploy Test"
+      - name: "Deploy Service - 1"
         uses: ./
         with:
           host-address: ${{ secrets.ORG_DEV_SERVER_IP }}
           host-ssh-user: ${{ secrets.ORG_DEV_SERVER_USER }}
-          working-directory: ./test
+          working-directory: ./test/service_1/server/
           filter: 'label=AIMED_LABS=true'
           ssh-private-key-base64: ${{ secrets.ORG_DEV_SERVER_SSH_PRIVATE_KEY_BASE64 }}
 
-      - name: "Check if the build version matches"
+      - name: "Deploy Service - 2"
+        uses: ./
+        with:
+          host-address: ${{ secrets.ORG_DEV_SERVER_IP }}
+          host-ssh-user: ${{ secrets.ORG_DEV_SERVER_USER }}
+          working-directory: ./test/service_2/server/
+          filter: 'label=AIMED_LABS=true'
+          ssh-private-key-base64: ${{ secrets.ORG_DEV_SERVER_SSH_PRIVATE_KEY_BASE64 }}
+
+      - name: "Sleep 30 seconds for the server to get updated"
         run: |
           sleep 30
-          wget -c 'https://test-action.things.aimedlabs.com' --no-check-certificate -O build_version_test_action
+
+      - name: "Check if the build version matches for service - 1"
+        run: |
+          wget -c 'https://service-1-test-action.things.aimedlabs.com' --no-check-certificate -O build_version_test_action
+          cat build_version_test_action
+          echo ${GITHUB_SHA}
+          grep -q ${GITHUB_SHA} "build_version_test_action"
+
+      - name: "Check if the build version matches for service - 2"
+        run: |
+          wget -c 'https://service-2-test-action.things.aimedlabs.com' --no-check-certificate -O build_version_test_action
           cat build_version_test_action
           echo ${GITHUB_SHA}
           grep -q ${GITHUB_SHA} "build_version_test_action"
