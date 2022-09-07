@@ -56,4 +56,4 @@ runs:
         done
         echo "- Up-ing docker-compose services on remote host ..."
         docker-compose -p ${{ inputs.project-name }} -f docker-compose.yml -H ssh://${{ inputs.host-ssh-user }}@${{ inputs.host-address }} up --remove-orphans --detach
-        docker -H ssh://${{ inputs.host-ssh-user }}@${{ inputs.host-address }} prune
+        docker -H ssh://${{ inputs.host-ssh-user }}@${{ inputs.host-address }} images prune --filter "dangling=true" -f
