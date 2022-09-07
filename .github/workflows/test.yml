@@ -42,19 +42,31 @@ jobs:
           project-name: 'server_2'
           filter: 'label=AIMED_LABS=true'
           ssh-private-key-base64: ${{ secrets.ORG_DEV_SERVER_SSH_PRIVATE_KEY_BASE64 }}
+          prune-dangling: true
 
       - name: "Sleep 30 seconds for the server to get updated"
         run: |
           sleep 30
 
-      - name: "Check if the build version matches for service - 1"
+      - name: "Test: untagged image count should be 0"
+        run: |
+            $( \
+              C=$( \
+                docker -H ssh://${{ secrets.ORG_DEV_SERVER_USER }}@${{ secrets.ORG_DEV_SERVER_IP }} images \
+                | grep "<none>" \
+                | wc -l \
+              ) \
+              && exit $C \
+            )
+
+      - name: "Test: build version matches for service - 1"
         run: |
           wget -c 'https://service-1-test-action.things.aimedlabs.com' --no-check-certificate -O build_version_test_action
           cat build_version_test_action
           echo ${GITHUB_SHA}
           grep -q ${GITHUB_SHA} "build_version_test_action"
 
-      - name: "Check if the build version matches for service - 2"
+      - name: "Test: build version matches for service - 2"
         run: |
           wget -c 'https://service-2-test-action.things.aimedlabs.com' --no-check-certificate -O build_version_test_action
           cat build_version_test_action
