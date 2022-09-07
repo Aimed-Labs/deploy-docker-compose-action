@@ -49,14 +49,14 @@ jobs:
           sleep 30
 
       - name: "Test: untagged image count should be 0"
-          run: |
+        run: |
             $( \
-              C=$(
+              C=$( \
                 docker -H ssh://${{ secrets.ORG_DEV_SERVER_USER }}@${{ secrets.ORG_DEV_SERVER_IP }} images \
                 | grep "<none>" \
                 | wc -l \
               ) \
-              && exit $C
+              && exit $C \
             )
 
       - name: "Test: build version matches for service - 1"
