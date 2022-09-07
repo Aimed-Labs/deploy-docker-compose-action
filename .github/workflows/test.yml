@@ -42,10 +42,22 @@ jobs:
           project-name: 'server_2'
           filter: 'label=AIMED_LABS=true'
           ssh-private-key-base64: ${{ secrets.ORG_DEV_SERVER_SSH_PRIVATE_KEY_BASE64 }}
+          prune-dangling: true
 
       - name: "Sleep 30 seconds for the server to get updated"
         run: |
           sleep 30
+
+      - name: "Test: untagged image count should be 0"
+          run: |
+            $( \
+              C=$(
+                docker -H ssh://${{ secrets.ORG_DEV_SERVER_USER }}@${{ secrets.ORG_DEV_SERVER_IP }} images \
+                | grep "<none>" \
+                | wc -l \
+              ) \
+              && exit $C
+            )
 
       - name: "Test: build version matches for service - 1"
         run: |

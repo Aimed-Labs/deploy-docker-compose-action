@@ -25,6 +25,10 @@ inputs:
   project-name:
     description: 'A unique project name that sets the context for docker-compose'
     required: true
+  prune-dangling:
+    description: 'run "docker prune" on the host'
+    default: false
+    required: false
 
 runs:
   using: "composite"
@@ -52,3 +56,4 @@ runs:
         done
         echo "- Up-ing docker-compose services on remote host ..."
         docker-compose -p ${{ inputs.project-name }} -f docker-compose.yml -H ssh://${{ inputs.host-ssh-user }}@${{ inputs.host-address }} up --remove-orphans --detach
+        docker -H ssh://${{ inputs.host-ssh-user }}@${{ inputs.host-address }} prune
