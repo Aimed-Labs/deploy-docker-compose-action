@@ -47,14 +47,14 @@ jobs:
         run: |
           sleep 30
 
-      - name: "Check if the build version matches for service - 1"
+      - name: "Test: build version matches for service - 1"
         run: |
           wget -c 'https://service-1-test-action.things.aimedlabs.com' --no-check-certificate -O build_version_test_action
           cat build_version_test_action
           echo ${GITHUB_SHA}
           grep -q ${GITHUB_SHA} "build_version_test_action"
 
-      - name: "Check if the build version matches for service - 2"
+      - name: "Test: build version matches for service - 2"
         run: |
           wget -c 'https://service-2-test-action.things.aimedlabs.com' --no-check-certificate -O build_version_test_action
           cat build_version_test_action
