@@ -67,5 +67,4 @@ runs:
           tar cf - ./ | ssh ${{ inputs.host-ssh-user }}@${{ inputs.host-address }} 'tar xfC - ~/${{ inputs.project-name }}_${{ inputs.working-directory }}'
           ssh ${{ inputs.host-ssh-user }}@${{ inputs.host-address }} 'docker-compose stop'
           ssh ${{ inputs.host-ssh-user }}@${{ inputs.host-address }} 'cd ~/${{ inputs.project-name }}_${{ inputs.working-directory }} && docker-compose build && docker-compose up'
-          ssh ${{ inputs.host-ssh-user }}@${{ inputs.host-address }} 'docker rmi $(docker images -qa) 2> /dev/null || echo "Remove what could"'
           ssh ${{ inputs.host-ssh-user }}@${{ inputs.host-address }} 'rm -rf ~/${{ inputs.project-name }}_${{ inputs.working-directory }}'
