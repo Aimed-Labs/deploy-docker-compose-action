@@ -1,5 +1,5 @@
 name: 'Deploy docker-compose action'
-description: 'Deploy services via docker-compose'
+description: 'Deploy docker-compose service'
 author: 'zeekhuge'
 branding:
   icon: 'maximize'
@@ -25,6 +25,10 @@ inputs:
   project-name:
     description: 'A unique project name that sets the context for docker-compose'
     required: true
+  deploy-strategy:
+    description: 'Strategy used to deploy service. Supports remote-docker, ssh'
+    required: false
+    default: 'remote-docker'
 
 runs:
   using: "composite"
@@ -36,7 +40,8 @@ runs:
         echo "${{ inputs.ssh-private-key-base64 }}" | base64 --decode > ~/.ssh/id_rsa
         ssh-keyscan -H ${{ inputs.host-address }} > ~/.ssh/known_hosts
 
-    - name: Deploying docker-compose
+    - name: Deploying using remote-docker strategy
+      if: ${{ inputs.deploy-strategy }} == 'remote-docker'
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
@@ -52,3 +57,14 @@ runs:
         done
         echo "- Up-ing docker-compose services on remote host ..."
         docker-compose -p ${{ inputs.project-name }} -f docker-compose.yml -H ssh://${{ inputs.host-ssh-user }}@${{ inputs.host-address }} up --remove-orphans --detach
+
+    - name: 'Deploy using ssh strategy '
+      if: ${{ inputs.deploy-strategy }} == 'ssh'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+          ssh ${{ inputs.host-ssh-user }}@${{ secrets.host-address }} 'mkdir -p ~/${{ inputs.project-name }}_{{ inputs.working-directory }}'
+          tar cf - ./ | ssh ${{ inputs.host-ssh-user }}@${{ inputs.host-address }} 'tar xfC - ~/${{ inputs.project-name }}_${{ inputs.working-directory }}'
+          ssh ${{ inputs.host-ssh-user }}@${{ inputs.host-address }} 'docker-compose stop'
+          ssh ${{ inputs.host-ssh-user }}@${{ inputs.host-address }} 'cd ~/${{ inputs.project-name }}_${{ inputs.working-directory }} && docker-compose build && docker-compose up'
+          ssh ${{ inputs.host-ssh-user }}@${{ inputs.host-address }} 'rm -rf ~/${{ inputs.project-name }}_${{ inputs.working-directory }}'
