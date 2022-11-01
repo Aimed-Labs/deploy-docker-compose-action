@@ -6,8 +6,14 @@ on:
       - main
 
 jobs:
-  lint_shellcheck:
+  lint_shellcheck-1:
     runs-on: infra-self-hosted-0
+    steps:
+    - uses: actions/checkout@v3
+    - uses: aimed-labs/action-shellcheck@master
+    
+  lint_shellcheck-2:
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v3
     - uses: aimed-labs/action-shellcheck@master
