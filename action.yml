@@ -25,6 +25,10 @@ inputs:
   project-name:
     description: 'A unique project name that sets the context for docker-compose'
     required: true
+  docker-file-name:
+    description: 'Use only docker-file here. Not the path'
+    required: true
+    default: 'docker-compose.yml'
 
 runs:
   using: "composite"
@@ -41,14 +45,14 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
         echo "- Building docker-compose images locally ..."
-        docker-compose -p ${{ inputs.project-name }} build
+        docker-compose -p ${{ inputs.project-name }} -f ${{ inputs.docker-file-name }} build
         docker images
         echo "- Down-ing docker-compose service on remote host ..."
-        docker-compose -p ${{ inputs.project-name }} -f docker-compose.yml -H ssh://${{ inputs.host-ssh-user }}@${{ inputs.host-address }} down --remove-orphans
+        docker-compose -p ${{ inputs.project-name }} -f ${{ inputs.docker-file-name }} -H ssh://${{ inputs.host-ssh-user }}@${{ inputs.host-address }} down --remove-orphans
         echo "- Loading docker images to remote host ..."
         for image in $(docker images --filter='${{ inputs.filter }}' --format "{{.Repository}}:{{.Tag}}"); do \
           echo "- Sending docker image: ${image} to remote host"; \
           docker save ${image} | bzip2 | ssh ${{ inputs.host-ssh-user }}@${{ inputs.host-address }} docker load ; \
         done
         echo "- Up-ing docker-compose services on remote host ..."
-        docker-compose -p ${{ inputs.project-name }} -f docker-compose.yml -H ssh://${{ inputs.host-ssh-user }}@${{ inputs.host-address }} up --remove-orphans --detach
+        docker-compose -p ${{ inputs.project-name }} -f ${{ inputs.docker-file-name }} -H ssh://${{ inputs.host-ssh-user }}@${{ inputs.host-address }} up --remove-orphans --detach
