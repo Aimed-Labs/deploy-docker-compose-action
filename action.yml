@@ -32,7 +32,7 @@ inputs:
    docker-services:
     description: 'The name of the services that need to be started'
     required: true
-    default: ''
+    default: ' '
 
 runs:
   using: "composite"
