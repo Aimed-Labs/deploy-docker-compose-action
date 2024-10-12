@@ -29,7 +29,7 @@ inputs:
     description: 'Use only docker-file here. Not the path'
     required: true
     default: 'docker-compose.yml'
-   docker-services:
+  docker-services:
     description: 'The name of the services that need to be started'
     required: true
     default: ' '
