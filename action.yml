@@ -29,6 +29,10 @@ inputs:
     description: 'Use only docker-file here. Not the path'
     required: true
     default: 'docker-compose.yml'
+   docker-services:
+    description: 'The name of the services that need to be started'
+    required: true
+    default: ''
 
 runs:
   using: "composite"
@@ -50,11 +54,11 @@ runs:
         docker compose -p ${{ inputs.project-name }} -f ${{ inputs.docker-file-name }} build
         docker images
         echo "- Down-ing docker-compose service on remote host ..."
-        docker --context remote_${{ inputs.project-name }} compose -p ${{ inputs.project-name }} -f ${{ inputs.docker-file-name }} down --remove-orphans
+        docker --context remote_${{ inputs.project-name }} compose -p ${{ inputs.project-name }} -f ${{ inputs.docker-file-name }} down ${{ inputs.docker-services }} --remove-orphans
         echo "- Loading docker images to remote host ..."
         for image in $(docker images --filter='${{ inputs.filter }}' --format "{{.Repository}}:{{.Tag}}"); do \
           echo "- Sending docker image: ${image} to remote host"; \
           docker save ${image} | bzip2 | ssh ${{ inputs.host-ssh-user }}@${{ inputs.host-address }} docker load ; \
         done
         echo "- Up-ing docker-compose services on remote host ..."
-        docker --context remote_${{ inputs.project-name }} compose -p ${{ inputs.project-name }} -f ${{ inputs.docker-file-name }} up --remove-orphans --detach
+        docker --context remote_${{ inputs.project-name }} compose -p ${{ inputs.project-name }} -f ${{ inputs.docker-file-name }} up ${{ inputs.docker-services }} --remove-orphans --detach
